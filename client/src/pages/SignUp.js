@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -8,7 +8,10 @@ import { Form } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
-const Login = () => {
+const SignUp = () => {
+	const [formName, setFormName] = useState('')
+	const [formEmail, setFormEmail] = useState('')
+	const [formPassword, setFormPassword] = useState('')
 	return (
 		<Container fluid className='w-100'>
 			<Row>
@@ -34,6 +37,9 @@ const Login = () => {
 							alt='Logo'
 							className='logo shadow rounded-circle d-block mx-auto'
 						/>
+						<Form.Group controlId='formName'>
+							<Form.Control type='text' placeholder='Name' />
+						</Form.Group>
 						<Form.Group controlId='formEmail'>
 							<Form.Control type='text' placeholder='Email' />
 						</Form.Group>
@@ -43,15 +49,12 @@ const Login = () => {
 								placeholder='Password'
 							/>
 						</Form.Group>
-						<Form.Group controlId='formKeepLoggedinCheckbox'>
-							<Form.Check type='checkbox' label='Keep me in' />
-						</Form.Group>
 						<Form.Text className='text-left text-primary text-underline text-center mb-2'>
-							New here? Join the family by{' '}
-							<Link to='/signup'> signing up </Link>
+							Already a member?
+							<Link to='/'> Click here to Log in</Link>
 						</Form.Text>
-						<Button variant='danger' className=' w-100'>
-							Log in
+						<Button variant='danger' className='w-100'>
+							Sign up
 						</Button>{' '}
 					</Form>
 				</Col>
@@ -60,4 +63,4 @@ const Login = () => {
 	)
 }
 
-export default Login
+export default SignUp
