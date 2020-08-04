@@ -13,7 +13,6 @@ const Login = () => {
 		<Container fluid className='w-100'>
 			<Row>
 				<Col
-					border
 					md='6'
 					className='d-flex flex-column align-items-center justify-content-center left-panel'>
 					<h2 className='text-white text-center'>
@@ -25,10 +24,9 @@ const Login = () => {
 					</h5>
 				</Col>
 				<Col
-					border
 					md='6'
 					className='d-flex flex-column justify-content-center align-items-center right-panel'>
-					<Form className='form-container p-4 mt-3 borde shadow'>
+					<Form className='form-container p-4 mt-3 border shadow'>
 						<img
 							src={logo}
 							alt='Logo'
@@ -41,6 +39,7 @@ const Login = () => {
 							<Form.Control
 								type='password'
 								placeholder='Password'
+								autoComplete='on'
 							/>
 						</Form.Group>
 						<Form.Group controlId='formKeepLoggedinCheckbox'>
