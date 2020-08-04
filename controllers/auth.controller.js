@@ -8,7 +8,9 @@ const jwt = require('jsonwebtoken')
 const { errorHandler } = require('../helpers/dbErrorHandling')
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.MAIL_KEY)
-exports.registerController = (req, res) => {
+
+// User registration
+exports.registerController = async (req, res) => {
 	const { name, email, password } = req.body
 	const errors = validationResult(req)
 	if (!errors.isEmpty()) {
@@ -17,13 +19,12 @@ exports.registerController = (req, res) => {
 			error: firstError
 		})
 	} else {
-		User.findOne({ email }).exec((err, user) => {
-			if (user) {
-				return res.status(400).json({
-					error: 'Email is already taken'
-				})
-			}
-		})
+		let user = await User.findOne({ email })
+		if (user) {
+			return res.status(400).json({
+				error: 'Email is already taken'
+			})
+		}
 
 		// Generate token
 		const token = jwt.sign(
@@ -52,18 +53,58 @@ exports.registerController = (req, res) => {
 			`
 		}
 
-		sgMail
-			.send(emailData)
-			.then(sent => {
-				return res.json({
-					message: `Email has been sent to ${email}`
-				})
+		try {
+			await sgMail.send(emailData)
+			return res.json({
+				message: `Email has been sent to ${email}`
 			})
-			.catch(err => {
-				console.log(err)
-				return res.status(400).json({
-					error: err
-				})
+		} catch (error) {
+			console.log(error)
+			return res.status(400).json({
+				success: false,
+				errors: errorHandler(err)
 			})
+		}
+	}
+}
+
+// User activation
+// Saving the user in DB only after the activation link sent as mail is clicked activationController
+exports.activationController = async (req, res) => {
+	const { token } = req.body
+	try {
+		if (token) {
+			const decoded = jwt.verify(
+				token,
+				process.env.JWT_ACCOUNT_ACTIVATION
+			)
+
+			// Decode the token and get user info
+			const { name, email, password } = decoded
+			// console.log(password)
+			let user = new User({
+				name,
+				email,
+				password
+			})
+
+			// Save the user in DB
+			await user.save()
+			return res.json({
+				success: true,
+				message: 'Signed up successfully',
+				user
+			})
+		} else {
+			// token missing
+			return res.status(401).json({
+				error: 'authentication token missing, please sign up again'
+			})
+		}
+	} catch (error) {
+		console.log(error)
+		return res.status(401).json({
+			error: errorHandler(error)
+		})
 	}
 }
