@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -7,10 +7,60 @@ import logo from '../assets/logo.png'
 import { Form } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
+import { authenticate, isAuth } from '../helpers/auth'
+import axios from 'axios'
 
-const Login = () => {
+const Login = ({ history }) => {
+	const [formData, setFormData] = useState({
+		email: '',
+		password: '',
+		keepLoggedIn: false
+	})
+
+	const { email, password, keepLoggedIn } = formData
+	const changeHandler = e => {
+		setFormData({ ...formData, [e.target.name]: e.target.value })
+	}
+	const checkBoxHandler = e => {
+		setFormData({ ...formData, keepLoggedIn: !keepLoggedIn })
+		console.log(keepLoggedIn)
+	}
+
+	const submitHandler = async e => {
+		e.preventDefault()
+		if (email !== '' && password !== '') {
+			try {
+				const res = await axios.post(
+					`${process.env.REACT_APP_API_URL}/login`,
+					{
+						email,
+						password
+					}
+				)
+				authenticate(res, () => {
+					setFormData({
+						...formData,
+						email: '',
+						password: ''
+					})
+					toast.success('Signed in successfully')
+				})
+				// check user role and redirect to intended page
+				console.log('isAuth ', isAuth().role)
+				isAuth() && isAuth().role === 'admin'
+					? history.push('/admin')
+					: history.push('/customer')
+			} catch (error) {
+				// toast.error(error.response.data.error)
+			}
+		} else {
+			toast.error('Please fill all the fields')
+		}
+	}
 	return (
 		<Container fluid className='w-100'>
+			<ToastContainer />
 			<Row>
 				<Col
 					md='6'
@@ -33,23 +83,41 @@ const Login = () => {
 							className='logo shadow rounded-circle d-block mx-auto'
 						/>
 						<Form.Group controlId='formEmail'>
-							<Form.Control type='text' placeholder='Email' />
+							<Form.Control
+								type='text'
+								placeholder='Email'
+								name='email'
+								value={email}
+								onChange={changeHandler}
+							/>
 						</Form.Group>
 						<Form.Group controlId='formPassword'>
 							<Form.Control
 								type='password'
 								placeholder='Password'
 								autoComplete='on'
+								name='password'
+								value={password}
+								onChange={changeHandler}
 							/>
 						</Form.Group>
 						<Form.Group controlId='formKeepLoggedinCheckbox'>
-							<Form.Check type='checkbox' label='Keep me in' />
+							<Form.Check
+								type='checkbox'
+								label='Keep me logged in'
+								name='keepLoggedIn'
+								value={keepLoggedIn}
+								onChange={checkBoxHandler}
+							/>
 						</Form.Group>
 						<Form.Text className='text-left text-primary text-underline text-center mb-2'>
 							New here? Join the family by{' '}
 							<Link to='/signup'> signing up </Link>
 						</Form.Text>
-						<Button variant='danger' className=' w-100'>
+						<Button
+							variant='danger'
+							className=' w-100'
+							onClick={submitHandler}>
 							Log in
 						</Button>{' '}
 					</Form>
