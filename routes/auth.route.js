@@ -13,12 +13,14 @@ const {
 // Load controllers
 const {
 	registerController,
-	activationController
+	activationController,
+	loginController
 } = require('../controllers/auth.controller')
 
 const router = express.Router()
 
 router.post('/register', registerValidator, registerController)
+router.post('/login', loginValidator, loginController)
 router.post('/activation', activationController)
 
 module.exports = router
