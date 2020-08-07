@@ -4,6 +4,8 @@ import SignUp from './pages/SignUp'
 import Activation from './pages/Activation'
 import PageNotFound from './pages/PageNotFound'
 import Customer from './pages/Customer'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import NavBar from './components/NavBar'
 import { BrowserRouter as Router, Switch, Link, Route } from 'react-router-dom'
 const App = () => {
@@ -16,17 +18,27 @@ const App = () => {
 				<Route path='/signup'>
 					<SignUp />
 				</Route>
+				<Route path='/login'>
+					<Login />
+				</Route>
 				<Route
 					path='/users/activate/:token'
 					exact
 					render={props => <Activation {...props} />}
 				/>
-				<Route path='/login'>
-					<Login />
+				<Route path='/users/password/forget'>
+					<ForgotPassword />
 				</Route>
+				<Route
+					path='/users/password/reset/:token'
+					exact
+					render={props => <ResetPassword {...props} />}
+				/>
+
 				<Route path='/customer'>
 					<Customer />
 				</Route>
+
 				<Route path='/'>
 					{' '}
 					<PageNotFound />{' '}
