@@ -158,3 +158,105 @@ exports.loginController = async (req, res) => {
 		})
 	}
 }
+
+// Forgot password, sends password reset link on user's email address
+exports.forgetPasswordController = async (req, res) => {
+	try {
+		const { email } = req.body
+		const errors = validationResult(req)
+
+		if (!errors.isEmpty()) {
+			const firstError = errors.array().map(error => error.msg)[0]
+			return res.status(422).json({
+				error: firstError
+			})
+		}
+		const user = await User.findOne({ email })
+		if (!user)
+			return res.status(400).json({
+				error:
+					'User does not exist, may be sign up first and then forget your password'
+			})
+		const token = jwt.sign(
+			{
+				_id: user._id
+			},
+			process.env.JWT_RESET_PASSWORD,
+			{
+				expiresIn: '100m'
+			}
+		)
+
+		// save the token in user's document
+		await user.updateOne({
+			resetPasswordLink: token
+		})
+
+		// Send password reset link
+		const emailData = {
+			from: process.env.EMAIL_FROM,
+			to: email,
+			subject: 'Password Reset Link',
+			html: `
+			<h1> Please click link to reset password </h1>
+			<h4> This link is valid for next 10 minutes </p>
+			<p>${process.env.CLIENT_URL}/users/password/reset/${token} </p>
+
+			<hr/>
+			<p> This email contains sensitive info </p>
+			<p>${process.env.CLIENT_URL} </p>
+			`
+		}
+		await sgMail.send(emailData)
+		return res.json({
+			message: `Password reset link has been sent to ${email}`
+		})
+	} catch (error) {
+		return res.status(400).json({
+			error: errorHandler(error)
+		})
+	}
+}
+
+// Reset password, saves new password for user
+exports.resetPasswordController = async (req, res) => {
+	try {
+		const { resetPasswordLink, newPassword } = req.body
+		const errors = validationResult(req)
+
+		if (!errors.isEmpty()) {
+			const firstError = errors.array().map(error => error.msg)[0]
+			return res.status(422).json({
+				error: firstError
+			})
+		}
+
+		if (resetPasswordLink) {
+			jwt.verify(resetPasswordLink, process.env.JWT_RESET_PASSWORD)
+
+			let user = await User.findOne({ resetPasswordLink })
+			if (!user)
+				return res.status(400).json({
+					error: 'User not found'
+				})
+
+			const updateFields = {
+				password: newPassword,
+				resetPasswordLiink: ''
+			}
+
+			user = _.extend(user, updateFields)
+
+			await user.save()
+
+			return res.json({
+				message: 'Hurrayy! You can now log in with your new password'
+			})
+		}
+	} catch (error) {
+		console.log(error)
+		return res.status(422).json({
+			message: error.message
+		})
+	}
+}
