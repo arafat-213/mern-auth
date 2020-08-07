@@ -41,7 +41,6 @@ const Activation = ({ match }) => {
 			toast.success(res.data.message)
 			console.log(res.error)
 		} catch (error) {
-			// toast.error('Something went wrong')
 			toast.error(error.response.data.error)
 		}
 	}

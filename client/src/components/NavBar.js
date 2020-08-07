@@ -2,6 +2,8 @@ import React from 'react'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import Nav from 'react-bootstrap/Nav'
+import { NavLink } from 'react-router-dom'
+
 const NavBar = () => {
 	return (
 		<Navbar
@@ -33,9 +35,11 @@ const NavBar = () => {
 					</NavDropdown>
 				</Nav>
 				<Nav>
-					<Nav.Link href='#deets'>Sign up</Nav.Link>
+					<Nav.Link>
+						<NavLink to='/signup'>Sign up</NavLink>
+					</Nav.Link>
 					<Nav.Link eventKey={2} href='#memes'>
-						Sign in
+						<NavLink to='/login'>Log in</NavLink>
 					</Nav.Link>
 				</Nav>
 			</Navbar.Collapse>

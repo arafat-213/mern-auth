@@ -6,7 +6,7 @@ import './Login.css'
 import logo from '../assets/logo.png'
 import { Form } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import { authenticate, isAuth } from '../helpers/auth'
 import axios from 'axios'
@@ -44,14 +44,14 @@ const Login = ({ history }) => {
 						email: '',
 						password: ''
 					})
+					// check user role and redirect to intended page
+					isAuth() && isAuth().role === 'admin'
+						? history.push('/admin')
+						: history.push('/customer')
 					toast.success('Signed in successfully')
 				})
-				// check user role and redirect to intended page
-				console.log('isAuth ', isAuth().role)
-				isAuth() && isAuth().role === 'admin'
-					? history.push('/admin')
-					: history.push('/customer')
 			} catch (error) {
+				console.log(error)
 				// toast.error(error.response.data.error)
 			}
 		} else {
@@ -111,15 +111,21 @@ const Login = ({ history }) => {
 							/>
 						</Form.Group>
 						<Form.Text className='text-left text-primary text-underline text-center mb-2'>
-							New here? Join the family by{' '}
-							<Link to='/signup'> signing up </Link>
+							Forgot password?
+							<Link to='/users/password/forget'> Reset it! </Link>
 						</Form.Text>
 						<Button
-							variant='danger'
+							variant='primary'
 							className=' w-100'
 							onClick={submitHandler}>
 							Log in
 						</Button>{' '}
+						<hr />
+						<Link to='/signup'>
+							<Button variant='primary' className=' w-100'>
+								Sign up
+							</Button>{' '}
+						</Link>
 					</Form>
 				</Col>
 			</Row>
@@ -127,4 +133,4 @@ const Login = ({ history }) => {
 	)
 }
 
-export default Login
+export default withRouter(Login)

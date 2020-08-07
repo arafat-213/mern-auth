@@ -135,11 +135,11 @@ const SignUp = () => {
 						</Form.Group>
 						<Form.Text className='text-left text-primary text-underline text-center mb-2'>
 							Already a member?
-							<Link to='/'> Click here to Log in</Link>
+							<Link to='/login'> Click here to Log in</Link>
 						</Form.Text>
 						<Button
 							onClick={submitHandler}
-							variant='danger'
+							variant='primary'
 							className='w-100'>
 							Sign up
 						</Button>{' '}

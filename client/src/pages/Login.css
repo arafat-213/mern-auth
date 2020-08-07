@@ -1,10 +1,10 @@
 .left-panel {
-	height: 100vh;
-	background: rgb(255, 130, 35);
+	min-height: 100vh;
+	background: rgb(13, 69, 155);
 	background: linear-gradient(
 		45deg,
-		rgba(255, 130, 35, 1) 2%,
-		rgba(237, 67, 57, 1) 100%
+		rgb(32, 186, 247) 2%,
+		rgb(13, 69, 155) 100%
 	);
 }
 
@@ -15,10 +15,10 @@
 }
 
 .left-panel h2 span {
-	background: orange;
+	/* background: orange;
 	padding: 2px;
 	border: 1px solid #321123;
-	border-radius: 10px;
+	border-radius: 10px; */
 }
 
 .left-panel h5 {
@@ -26,6 +26,15 @@
 	font-family: 'Cabin', sans-serif;
 }
 
+.btn-primary {
+	background: rgb(13, 69, 155);
+	background: linear-gradient(
+		45deg,
+		rgb(32, 186, 247) 100%,
+		rgb(13, 69, 155) 100%
+	);
+	border-color: rgb(13, 69, 155);
+}
 .form-container {
 	width: 70%;
 }
