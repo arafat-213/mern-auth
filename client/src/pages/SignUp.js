@@ -61,7 +61,7 @@ const SignUp = () => {
 						password2: '',
 						textChange: 'Sign Up'
 					})
-					toast.error(error.response.data.errors)
+					toast.error(error.response.data.error)
 				}
 			} else {
 				toast.error("Passwords don't matches")

@@ -35,12 +35,12 @@ const NavBar = () => {
 					</NavDropdown>
 				</Nav>
 				<Nav>
-					<Nav.Link>
-						<NavLink to='/signup'>Sign up</NavLink>
-					</Nav.Link>
-					<Nav.Link eventKey={2} href='#memes'>
-						<NavLink to='/login'>Log in</NavLink>
-					</Nav.Link>
+					<NavLink className='nav-link' to='/signup'>
+						Sign up
+					</NavLink>
+					<NavLink className='nav-link' to='/login'>
+						Log in
+					</NavLink>
 				</Nav>
 			</Navbar.Collapse>
 		</Navbar>
