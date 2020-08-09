@@ -10,6 +10,7 @@ import { Link, withRouter } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import { authenticate, isAuth } from '../helpers/auth'
 import axios from 'axios'
+import GoogleLogin from 'react-google-login'
 
 const Login = ({ history }) => {
 	const [formData, setFormData] = useState({
@@ -25,6 +26,38 @@ const Login = ({ history }) => {
 	const checkBoxHandler = e => {
 		setFormData({ ...formData, keepLoggedIn: !keepLoggedIn })
 		console.log(keepLoggedIn)
+	}
+
+	// Google login
+	const sendGoogleToken = async tokenId => {
+		console.log('CLIENT ID', process.env.REACT_APP_GOOGLE_CLIENT)
+		try {
+			const res = await axios.post(
+				`${process.env.REACT_APP_API_URL}/googlelogin`,
+				{
+					idToken: tokenId
+				}
+			)
+			informParent(res)
+		} catch (error) {
+			console.error('GOOGLE SIGN IN ERROR', error.response)
+			toast.error('Google log in failed!')
+		}
+	}
+
+	// Authentication helper for google log in
+	const informParent = response => {
+		authenticate(response, () => {
+			isAuth() && isAuth.role === 'admin'
+				? history.push('/admin')
+				: history.push('/customer')
+		})
+	}
+
+	// Response from google OAuth
+	const responseGoogle = response => {
+		console.log(response)
+		sendGoogleToken(response.tokenId)
 	}
 
 	const submitHandler = async e => {
@@ -126,6 +159,11 @@ const Login = ({ history }) => {
 								Sign up
 							</Button>{' '}
 						</Link>
+						<GoogleLogin
+							clientId={`${process.env.REACT_APP_GOOGLE_CLIENT}`}
+							onSuccess={responseGoogle}
+							onFailure={responseGoogle}
+							cookiePolicy={'single_host_origin'}></GoogleLogin>
 					</Form>
 				</Col>
 			</Row>

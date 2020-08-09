@@ -16,7 +16,8 @@ const {
 	activationController,
 	loginController,
 	forgetPasswordController,
-	resetPasswordController
+	resetPasswordController,
+	googleLoginController
 } = require('../controllers/auth.controller')
 
 const router = express.Router()
@@ -30,5 +31,6 @@ router.put(
 	forgetPasswordController
 )
 router.put('/password/reset', resetPasswordValidator, resetPasswordController)
+router.post('/googlelogin', googleLoginController)
 
 module.exports = router

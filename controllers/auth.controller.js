@@ -242,7 +242,7 @@ exports.resetPasswordController = async (req, res) => {
 
 			const updateFields = {
 				password: newPassword,
-				resetPasswordLiink: ''
+				resetPasswordLink: ''
 			}
 
 			user = _.extend(user, updateFields)
@@ -257,6 +257,48 @@ exports.resetPasswordController = async (req, res) => {
 		console.log(error)
 		return res.status(422).json({
 			message: error.message
+		})
+	}
+}
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT)
+exports.googleLoginController = async (req, res) => {
+	try {
+		const { idToken } = req.body
+
+		// verify token
+		const response = await client.verifyIdToken({
+			idToken,
+			audience: process.env.GOOGLE_CLIENT
+		})
+
+		const { email_verified, name, email } = response.payload
+		let user
+		if (email_verified) user = await User.findOne({ email })
+		else return res.status(400).json({ error: 'Google login failed' })
+		if (user) {
+			const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+				expiresIn: '7d'
+			})
+
+			const { _id, email, name, role } = user
+			return res.json({
+				token,
+				user: { _id, email, name, role }
+			})
+		} else {
+			// if user does not exist, create a new one and save it in db
+			let password = email + process.env.JWT_SECRET
+			user = new User({ name, email, password })
+			await user.save()
+			const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+				expiresIn: '7d'
+			})
+		}
+	} catch (error) {
+		console.log(error)
+		res.status(400).json({
+			error: error.kmessage
 		})
 	}
 }
